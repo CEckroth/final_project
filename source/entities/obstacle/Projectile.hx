@@ -10,4 +10,12 @@ class Projectile extends FlxSprite {
 
         velocity.x = -50;
     }
+
+    override function update(elapsed:Float) 
+        {
+
+
+        super.update(elapsed);
+
+    }
 }
