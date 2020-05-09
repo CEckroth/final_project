@@ -9,10 +9,10 @@ class Hero extends FlxSprite {
     public static var HEIGHT(default, never):Int = 32;
 
     public static var GRAVITY(default, never):Float = 300;
-    public static var TERMINAL_VELOCITY(default, never):Float = 600;
+    public static var TERMINAL_VELOCITY(default, never):Float = 500;
     public static var X_SPEED(default, never):Float = 200;
 
-    public static var JUMP_SPEED(default, never):Float = -200;
+    public static var JUMP_SPEED(default, never):Float = -250;
 
 
     //Uncomment for testing, comment out when the map moves.
@@ -34,8 +34,8 @@ class Hero extends FlxSprite {
 
         gatherInputs();
 
-        var direction:Int = getMoveDirectionCoefficient(leftInput,rightInput);
-        velocity.x = X_SPEED * direction;
+       // var direction:Int = getMoveDirectionCoefficient(leftInput,rightInput);
+       // velocity.x = X_SPEED * direction;
 
         jump(jumpInput);
 
@@ -44,8 +44,8 @@ class Hero extends FlxSprite {
     }
 
     private function gatherInputs():Void {
-        leftInput = FlxG.keys.pressed.A;
-        rightInput = FlxG.keys.pressed.D;
+       // leftInput = FlxG.keys.pressed.A;
+       // rightInput = FlxG.keys.pressed.D;
 
         jumpInput = FlxG.keys.justPressed.SPACE;
     }
@@ -57,16 +57,16 @@ class Hero extends FlxSprite {
         @param rightPressed Boolean indicating if the "right" movement button is pressed.
         @return Returns 1, 0, or -1. Multiply movement speed by this to set movement direction.
     **/
-    private function getMoveDirectionCoefficient(leftPressed:Bool, rightPressed:Bool):Int {
-        var finalDirection:Int = 0;        
-        if (leftPressed) {
-            finalDirection--;
-        }
-        if (rightPressed) {
-            finalDirection++;
-        }
-        return finalDirection;
-    }
+    // private function getMoveDirectionCoefficient(leftPressed:Bool, rightPressed:Bool):Int {
+    //     var finalDirection:Int = 0;        
+    //     if (leftPressed) {
+    //         finalDirection--;
+    //     }
+    //     if (rightPressed) {
+    //         finalDirection++;
+    //     }
+    //     return finalDirection;
+    // }
 
     /**
         Simple function for handling jump logic.
