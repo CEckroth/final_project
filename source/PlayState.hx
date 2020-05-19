@@ -7,28 +7,26 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import entities.player.Hero;
 import entities.obstacle.Projectile;
-import entities.terrain.Wall;
 import entities.terrain.Floor;
 import flixel.FlxState;
 
 
 class PlayState extends FlxState
 {		
-	private static var WALL_COUNT(default, never) = 10;
-	private static var WALL_START_X(default, never) = 150;
-	private static var WALL_START_Y(default, never) = 200;
-
 	private static var FLOOR_COUNT(default, never) = 20;
 	private static var FLOOR_START_X(default, never) = 0;
 	private static var FLOOR_START_Y(default, never) = 300;
 
+	private static var PROJECTILE_COUNT(default, never) = 10;
+	private static var PROJECTILE_SPAWN_BORDER_Y(default, never) = 300;
+
 	private var hero:Hero;
-	private var projectile:Projectile;
-	private var walls:FlxTypedGroup<Wall>;
+	private var projectiles:FlxTypedGroup<Projectile>;
 	private var floors:FlxTypedGroup<Floor>;
 	
 	private var projectileExists = false;
 
+	// CREATE FUNCTION
 	override public function create():Void
 	{
 			
@@ -40,68 +38,80 @@ class PlayState extends FlxState
 		add(hero);
 	
 		initializeFloor();
-		// initializeFireballs();
+		// initializeProjectile();
 	}
 	
 	
+	// INITIALIZEFLOOR FUNCTION
 	private function initializeFloor()
+	{
+		floors = new FlxTypedGroup<Floor>();
+		for (i in 0...FLOOR_COUNT) 
 		{
-			floors = new FlxTypedGroup<Floor>();
-			for (i in 0...FLOOR_COUNT) {
-				var x:Float = FLOOR_START_X + (i * Floor.WIDTH);
-				var y:Float = FLOOR_START_Y;
-				var floor:Floor = new Floor(x, y);
-				floors.add(floor);
-			}
-			add(floors);
+			var x:Float = FLOOR_START_X + (i * Floor.WIDTH);
+			var y:Float = FLOOR_START_Y;
+			var floor:Floor = new Floor(x, y);
+			floors.add(floor);
 		}
+		add(floors);
+	}
 
+	// INITIALIZEPROJECTILE FUNCTION
+	private function initializeProjectile()
+	{
+		projectiles = new FlxTypedGroup<Projectile>();
+		for (i in 0...PROJECTILE_COUNT) 
+		{
+			var x:Float = 500;
+			var y:Float = FlxG.random.int(PROJECTILE_SPAWN_BORDER_Y, FlxG.height-PROJECTILE_SPAWN_BORDER_Y);
+			var projectile = new Projectile(x,y);
+			projectiles.add(projectile);
+		}
+		add(projectiles);
+	}
+	
+
+	// UPDATE FUNCTION
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 	
-		// Uncomment to collide hero against all wall objects.
-		FlxG.collide(hero, projectile);
+		// Colllides hero into wall
 		FlxG.collide(hero, floors);
 
+		FlxG.overlap(hero, projectiles, resolveHeroObstacleOverlap);
 
-		resolveHeroObstacleOverlap(hero, projectile);
-
-		if (projectile.x > 0)
+		for (projectile in projectiles) 
 			{
-				projectile.kill();
+				screenWrapObject(projectile);
 			}
+
 	
 	}
-	
 
-		private function initializeProjectile()
-			{
-				if (!projectileExists)
-					{
-						projectile = new Projectile();
-						add(projectile);
-					}
-			}
-		/**
-			Function called when an overlap between hero and fireball is detected.
-		**/
-		private function resolveHeroObstacleOverlap(hero:Hero, projectile:Projectile) {
-			trace("You went splat!");
-			//projectile.kill();
-			hero.kill();
+
+	// SCREENWRAPOBJECT FUNCTION
+	private function screenWrapObject(wrappingObject:FlxObject) 
+	{
+		if (wrappingObject.x > FlxG.width) {
+			wrappingObject.x = 0 - wrappingObject.width;
+		} else if (wrappingObject.x + wrappingObject.width < 0) {
+			wrappingObject.x = FlxG.width;
 		}
-	
 
+		if (wrappingObject.y > FlxG.height) {
+			wrappingObject.y = 0 - wrappingObject.height;
+		} else if (wrappingObject.y + wrappingObject.height < 0) {
+			wrappingObject.y = FlxG.height;
+		}
+	}
 	
-		// 	if (token == COIN_COUNT)
-		// 		{
-		// 			trace ("You collected all the coins!");
-		// 			hero.kill();
-		// 			winMessage = new FlxText(200, 200, 0, "You Win!", 50);
-		// 			winMessage.color.yellow;
-		// 			winMessage.setBorderStyle(SHADOW, FlxColor.RED);
-		// 			add(winMessage);
-		// 		}
-		// }
+	// RESOLVEHEROOBSTACLEOVERLAP FUNCTION
+	private function resolveHeroObstacleOverlap(hero:Hero, projectile:Projectile) 
+	{
+		trace("You went splat!");
+		projectile.kill();
+		hero.kill();
+	}
+	
 }
